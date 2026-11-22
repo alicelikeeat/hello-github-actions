@@ -1,0 +1,25 @@
+name: Quantum 3-SAT simulation
+on:
+  pull_request:
+    paths:
+      - quantum/anneal.py
+      - .github/workflows/quantum-3sat.yml
+permissions:
+  contents: read
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6
+      - run: python quantum/anneal.py | tee -a "$GITHUB_STEP_SUMMARY"
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paired-3sat-results
+          path: results.csv
+          if-no-files-found: error
